@@ -40,11 +40,17 @@ public class MainActivity extends AppCompatActivity {
     private File photoFile;
     public String photoFileName = "photo.jpg";
 
+    private Button btnlogout;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        btnlogout = findViewById(R.id.btnlogout);
 
         etDescription = findViewById(R.id.etDescription);
         btnCaptureImage = findViewById(R.id.btnCaptureImage);
@@ -74,15 +80,31 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 savePost(description, currentUser,photoFile);
+
             }
         });
-        
+
+        btnlogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ParseUser.logOut();
+                ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+
+                Post post = new Post();
+                post.setUser(currentUser);
 
 
+
+
+
+            }
+        });
 
 
 
     }
+
 
     private void launchCamera() {
         // create Intent to take a picture and return control to the calling application
@@ -153,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Log.i(TAG,"Post save is successful");
+                Toast.makeText(MainActivity.this, "Successful posted!", Toast.LENGTH_SHORT).show();
                 etDescription.setText("");
                 ivPostImage.setImageResource(0);
             }

@@ -7,12 +7,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.instagramclone.MainActivity;
 import com.example.instagramclone.Post;
 import com.example.instagramclone.PostsAdapter;
 import com.example.instagramclone.R;
@@ -28,6 +31,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class PostsFragment extends Fragment {
+
+    SwipeRefreshLayout swipeContainer;
 
     private RecyclerView rvPosts;
     public static final String TAG = "PostPragment";
@@ -54,6 +59,24 @@ public class PostsFragment extends Fragment {
         super.onViewCreated(view,savedInstanceState);
 
         rvPosts = view.findViewById(R.id.rvPosts);
+
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG,"Fetching new data");
+                Toast.makeText(getContext(), "Fetching new data", Toast.LENGTH_SHORT).show();
+                queryPosts();
+            }
+        });
+
+
 
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(getContext(),allPosts);
@@ -84,6 +107,7 @@ public class PostsFragment extends Fragment {
                     Log.i(TAG, "Post: "+ post.getDescription()+ ", username: "+ post.getUser().getUsername());
                 }
 
+                swipeContainer.setRefreshing(false);
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
             }
